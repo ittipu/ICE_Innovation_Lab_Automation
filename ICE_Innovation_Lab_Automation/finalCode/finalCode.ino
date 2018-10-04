@@ -27,6 +27,7 @@ float air_quality;
 #define led4 D6
 long duration;
 int distance;
+int mdistance;
 long count;
 boolean flag=true;
 char ssid[] = "ICE_Innovation_Lab";
@@ -71,7 +72,7 @@ void getDHT()
   float humIni = localHum;
   localTemp = dht.readTemperature();
   localHum = dht.readHumidity();
-  if (isnan(localHum) || isnan(localTemp))   // Check if any reads failed and exit early (to try again).
+  if ((isnan(localHum) || isnan(localTemp))&&(localTemp<100&&localHum<100))   // Check if any reads failed and exit early (to try again).
   {
     Serial.println("Failed to read from DHT sensor!");
     localTemp = tempIni;
@@ -117,9 +118,12 @@ void getDistance(){
   
   // Calculating the distance
   distance= duration*0.034/2;
+  if(distance<=300){
+    mdistance=distance;
+  }
   // Prints the distance on the Serial Monitor
   Serial.print("Distance: ");
-  Serial.println(distance);
+  Serial.println(mdistance);
 }
 
 /***************************************************
@@ -173,7 +177,7 @@ void drawDistance(){
   display.drawString(85 + x, 30 + y, "Distance");
   
   display.setFont(ArialMT_Plain_10);
-  String temp = String(distance) + "cm";
+  String temp = String(mdistance) + "cm";
   display.drawString(85 + x, 40 + y, temp);
   int tempWidth = display.getStringWidth(temp);
   
@@ -265,4 +269,3 @@ CAYENNE_IN(4)  // button
        digitalWrite(led4,LOW); 
      }
   }
-
